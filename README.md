@@ -4,7 +4,7 @@
 ## Project Name: {{Pending}}
 
 
-Join [Trello](https://trello.com/invite/b/67a4087cda36e1ea3762b8f4/ATTIaa480efd5a1cfc18f65d30b27a2083cb6F71AE97/cs4347project) to track our project: 
+Join [Trello](https://trello.com/invite/b/67a4087cda36e1ea3762b8f4/ATTIaa480efd5a1cfc18f65d30b27a2083cb6F71AE97/cs4347project) to track our project.
 
 ```
 # Application logic:
