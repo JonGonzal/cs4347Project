@@ -1,7 +1,7 @@
 
 
 # CS 4347 Project 
-## Project Name: {{Pending}}
+## Project Name: Lemma Books
 
 
 ```
