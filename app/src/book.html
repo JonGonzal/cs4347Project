@@ -80,24 +80,33 @@
       const searchQuery = urlParams.get('q');
       
       if (searchQuery) {
-        // Set the search input value
-        document.getElementById('searchInput').value = searchQuery;
-        
-        // Update the page title and content based on the search query
-        document.title = `${searchQuery} - Book Details`;
-        document.getElementById('bookTitle').textContent = searchQuery;
-        
-        // In a real application, you would fetch book details from a database here
-        // and update the page content accordingly
-      }
+    // Set the search box value
+    document.getElementById('searchInput').value = searchQuery;
 
-      // Handle search form submission
-      document.getElementById('searchForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const searchValue = document.getElementById('searchInput').value;
-        if (searchValue) {
-          window.location.href = `book.html?q=${encodeURIComponent(searchValue)}`;
+    // Fetch book details dynamically
+    fetch(`src/search_book.php?q=${encodeURIComponent(searchQuery)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data) {
+          document.title = `${data.Title} - Book Details`;
+          document.getElementById('bookTitle').textContent = data.Title;
+          document.getElementById('bookAuthor').textContent = "By " + data.AuthorName;
+          document.getElementById('bookDescription').textContent = data.Summary;
+          document.getElementById('bookPrice').textContent = "$" + data.Price;
+          document.getElementById('bookISBN').textContent = data.ISBN;
+        } else {
+          alert("Book not found.");
         }
+      });
+  }
+
+  // Validate search input
+  document.getElementById('searchForm').addEventListener('submit', function(e) {
+    const val = document.getElementById('searchInput').value.trim();
+    if (!val.match(/^[\w\s\-]+$/)) {
+      alert("Search input contains invalid characters.");
+      e.preventDefault();
+    }
       });
     </script>
 
