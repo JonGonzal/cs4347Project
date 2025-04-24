@@ -159,7 +159,7 @@
     <script>
       // Handle search form submission
       document.getElementById('searchForm').addEventListener('submit', function(e) {
-      const val = document.getElementById('searchInput').value.trim();
+        const val = document.getElementById('searchInput').value.trim();
         if (!val.match(/^[\w\s\-]+$/)) {
           alert("Search input contains invalid characters.");
           e.preventDefault();
