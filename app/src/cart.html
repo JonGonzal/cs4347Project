@@ -159,10 +159,10 @@
     <script>
       // Handle search form submission
       document.getElementById('searchForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const searchValue = document.getElementById('searchInput').value;
-        if (searchValue) {
-          window.location.href = `book.html?q=${encodeURIComponent(searchValue)}`;
+      const val = document.getElementById('searchInput').value.trim();
+        if (!val.match(/^[\w\s\-]+$/)) {
+          alert("Search input contains invalid characters.");
+          e.preventDefault();
         }
       });
     </script>
