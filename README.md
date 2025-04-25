@@ -3,7 +3,6 @@
 # CS 4347 Project 
 ## Project Name: Lemma Books
 
-
 ```
 # Application logic:
     - app 
@@ -27,4 +26,15 @@
     - public/styles.css
     - public/index.php
     - public/assets
+```
+## Installing instructions
+
+Using MySQL and Linux:
+
+- Install MySQL Shell with this command:
+    ` sudo apt-get install mysql-shell `
+``` 
+> sudo mysql -u root -p < lemma_books.sql
+> sudo mysql -u root -p
+mysql > USE book_shop;
 ```
