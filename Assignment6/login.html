@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Customer Login</title>
+  </head>
+  <body>
+    <h1>Customer Login</h1>
+    <form action="vulnerable_login.php" method="POST">
+      <label for="username">Username:</label><br />
+      <input type="text" id="uzername" name="username" required /><br /><br />
+
+      <label for="customer_id">Customer ID:</label><br />
+      <input
+        type="text"
+        id="customer_id"
+        name="customer_id"
+        required
+      /><br /><br />
+      <!-- aj';#        in the username and anything in the customer ID will still let you log in -->
+
+      <input type="submit" value="Login" />
+
+      <a href="update.html">Reset Password</a>
+    </form>
+  </body>
+</html>
