@@ -148,6 +148,7 @@ CREATE TABLE `books_ordered` (
 
 LOCK TABLES `books_ordered` WRITE;
 /*!40000 ALTER TABLE `books_ordered` DISABLE KEYS */;
+INSERT INTO `books_ordered` VALUES (1,'9780142437018',2),(2,'9780142437179',1),(3,'9780142437209',3),(4,'9780142437261',2),(5,'9780143036692',5),(6,'9780143037149',8),(7,'9780143038412',2),(8,'9780143039563',4),(9,'9780143058144',5),(10,'9780192802637',3);
 /*!40000 ALTER TABLE `books_ordered` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -191,10 +192,11 @@ CREATE TABLE `customer` (
   `Fname` varchar(100) NOT NULL,
   `Lname` varchar(100) NOT NULL,
   `Email` varchar(255) NOT NULL,
+  `password` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`CustomerID`),
   UNIQUE KEY `Username` (`Username`),
   UNIQUE KEY `Email` (`Email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=90631 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,6 +205,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
+INSERT INTO `customer` VALUES (1,'awilley2','Alfie','Willey','awilley2@miibeian.gov.cn','bK47BwHeFok'),(2,'gcawthorneu','Gerhardine','Cawthorne','gcawthorneu@pagesperso-orange.fr','qD4&.w.}cCXo'),(3,'smchirrieo','Stacy','M\'Chirrie','smchirrieo@networksolutions.com','nE68b!{)'),(4,'shelgassh','Shurlocke','Helgass','shelgassh@cloudflare.com','hL2/j0*)oGRZkf&*'),(5,'ewoan6','Elladine','Woan','ewoan6@japanpost.jp','pH8Q%L%F8|</F8CZ'),(6,'msignore4','x','Signore','msignore4@loc.gov','hW6\\&S\'jCfRQ9!'),(7,'bcollicott5','Barton','Collicott','bcollicott5@oracle.com','cM2,D`mmUTH|cX'),(9,'cbertelmotq','Claretta','Bertelmot','cbertelmotq@paypal.com','qL3l\'!L+<?'),(10,'mbrassill13','Marleen','Brassill','mbrassill13@infoseek.co.jp','cF9\\zLvq~'),(33,'gpirolinid','Glory','Pirolini','gpirolinid@ihg.com','zD1!cF!v'),(84,'scrammyc','Shani','Crammy','scrammyc@joomla.org','lK6<oIb!\"<Mj4|9<\"'),(93,'adanevn','Abbe','Danev','adanevn@oaic.gov.au','rM8(RRVX#F,'),(162,'slauthian9','Sheba','Lauthian','slauthian9@yandex.ru','kS4DN?Dd'),(191,'gguierree','Goldie','Guierre','gguierree@bravesites.com','rT1ce1d\\t'),(291,'adinceyz','Alberik','Dincey','adinceyz@webeden.co.uk','aR5z<\"nvn\"'),(431,'soxbroughp','Sibel','Oxbrough','soxbroughp@vk.com','zU9i=\'V_DmriLC6'),(589,'adennyi','Adria','Denny','adennyi@edublogs.org','uQ0`q?yal}y'),(624,'zesland7','Zacharias','Esland','zesland7@nih.gov','fZ2).{`.U'),(652,'hgottelier1','Helyn','Gottelier','hgottelier1@mozilla.com','sE2>8LYChs)0N'),(690,'ctummonsg','Costanza','Tummons','ctummonsg@list-manage.com','fH5fF{dQ%%Z'),(694,'mbeckhurst12','Marena','Beckhurst','mbeckhurst12@macromedia.com','gU0@T!>}p>M'),(896,'bwapplington11','Benjamin','Wapplington','bwapplington11@tinyurl.com','pP9~W47nQd<6'),(955,'hberryannw','Hestia','Berryann','hberryannw@cisco.com','pW6Z$W%ZDypsXQ(w'),(1194,'fwillerstones','Fabe','Willerstone','fwillerstones@ebay.co.uk','lW7e59dTQ'),(1927,'tspunerr','Timothy','Spuner','tspunerr@surveymonkey.com','oK8~5aWFZB'),(3138,'cgilhespyl','Catriona','Gilhespy','cgilhespyl@aol.com','vQ7\'V)pj{m59'),(4462,'gmcguggyv','Geneva','McGuggy','gmcguggyv@parallels.com','uM1@,x=JVb$n_'),(5669,'gtobiasy','Guthrie','Tobias','gtobiasy@ft.com','eU876q{WU'),(5828,'gairth8','Gabbie','Airth','gairth8@lulu.com','kT8Y4g511'),(6023,'kstourton0','Kiah','Stourton','kstourton0@amazon.co.jp','pI886XbxjAMYe'),(8179,'mwinfindinef','Monique','Winfindine','mwinfindinef@telegraph.co.uk','mY2Yzr`2n(Z|'),(9120,'sknightont','Siward','Knighton','sknightont@slashdot.org','yS6t!Whe=jQi/7H'),(9245,'ssothcott3','Sinclare','Sothcott','ssothcott3@fema.gov','cW0,@J>#H#{yM'),(11467,'mthelwllm','Major','Thelwll','mthelwllm@gravatar.com','pS9JRA$E|Wi\\AnT'),(14218,'lmcruviek','Lorrin','McRuvie','lmcruviek@google.it','xK5&`&OA)jZ44'),(26859,'fkhilkova','Fidelity','Khilkov','fkhilkova@amazon.co.jp','gA82*\'o>j0<'),(28973,'fsphinxex','Fiona','Sphinxe','fsphinxex@globo.com','jZ8}uX$m|}/Bp'),(35828,'srulerb','Samara','Ruler','srulerb@marriott.com','xA89i,M63bn_k'),(57564,'esteadman10','Ernestus','Steadman','esteadman10@hp.com','yL3n0WW7#\\yW6a'),(90630,'sioannidisj','Shaun','Ioannidis','sioannidisj@nature.com','cA0d`tyXk#Didhm');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -272,7 +275,7 @@ CREATE TABLE `orders` (
   PRIMARY KEY (`OrderID`),
   KEY `CustomerID` (`CustomerID`),
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`CustomerID`) REFERENCES `customer` (`CustomerID`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -281,6 +284,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (1,1,'7 Sloan Parkway','Processing','2024-12-06'),(2,33,'2452 Reinke Alley','In Transit','2024-12-12'),(3,2,'8129 Commercial Parkway','Delivered','2025-04-16'),(4,3,'485 Bluestem Alley','Processing','2024-06-23'),(5,4,'16 Manitowish Crossing','In Transit','2024-09-19'),(6,5,'3 Manley Hill','Delivered','2025-04-09'),(7,6,'8 Canary Alley','Processing','2025-01-15'),(8,7,'4 Maple Wood Drive','In Transit','2025-03-23'),(9,9,'546 Annamark Trail','Delivered','2025-01-18'),(10,10,'781 Harbort Parkway','Delivered','2025-04-12');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -307,6 +311,7 @@ CREATE TABLE `places` (
 
 LOCK TABLES `places` WRITE;
 /*!40000 ALTER TABLE `places` DISABLE KEYS */;
+INSERT INTO `places` VALUES (1,1),(3,2),(4,3),(5,4),(6,5),(7,6),(8,7),(9,9),(10,10),(2,33);
 /*!40000 ALTER TABLE `places` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -395,4 +400,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-24 23:26:47
+-- Dump completed on 2025-04-26 16:38:33
