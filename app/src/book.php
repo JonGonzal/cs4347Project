@@ -1,5 +1,8 @@
 <?php
 session_start();
+
+require_once __DIR__ . '/db.php';
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: auth.php');
     exit();
@@ -28,7 +31,7 @@ if (!isset($_SESSION['user_id'])) {
 <div class="container mt-4">
   <div class="row">
     <div class="col-md-4">
-      <img id="bookCover" src="https://via.placeholder.com/400x600" class="img-fluid rounded" alt="Book Cover">
+      <img id="bookCover" src="/covers/placeholder.jpg" class="img-fluid rounded" alt="Book Cover">
     </div>
     <div class="col-md-8">
       <h1 id="bookTitle">Book Title</h1>
@@ -117,7 +120,7 @@ if (words.length > previewLength) {
 
           const coverURL = data.ISBN
             ? `https://covers.openlibrary.org/b/isbn/${data.ISBN}-L.jpg`
-            : 'https://via.placeholder.com/400x600?text=No+Cover';
+            : 'covers/placeholder.jpg';
           document.getElementById('bookCover').src = coverURL;
 
           document.getElementById('addToCart').disabled = false;

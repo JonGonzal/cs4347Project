@@ -1,13 +1,30 @@
 <?php
-$host = 'localhost';
-$dbname = 'lemma_books';
-$username = 'root';
-$password = ''; // or your actual password
+/*
+ $host = 'localhost';
+ $dbname = 'lemma_books';
+ $username = 'root';
+ $password = ''; // or your actual password
+ 
+ $conn = new mysqli($host, $username, $password, $dbname);
+ 
+ if ($conn->connect_error) {
+     die("Connection failed: " . $conn->connect_error);
+ }
+ */
+?>
 
-$conn = new mysqli($host, $username, $password, $dbname);
+<?php
+$host = 'mysql';
+$db   = 'lemma_books';
+$user = 'root';
+$pass = 'password';
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+$dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+
+try {
+    $pdo = new PDO($dsn, $user, $pass);
+} catch (PDOException $e) {
+    die('Connection failed: ' . $e->getMessage());
 }
 ?>
 

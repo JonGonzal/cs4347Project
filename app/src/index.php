@@ -1,8 +1,11 @@
 <?php
 session_start();
+
+require_once __DIR__ . '/db.php';
+
 if (!isset($_SESSION['username'])) {
   header('Location: auth.php');
-  exit;
+  exit();
 }
 ?>
 

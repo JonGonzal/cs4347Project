@@ -1,5 +1,7 @@
 <?php
-require 'db.php';
+session_start();
+// require 'db.php';
+require_once __DIR__ . '/db.php';
 
 header('Content-Type: application/json');
 
@@ -12,7 +14,7 @@ $sql = "
     FROM book b
     LEFT JOIN book_authorship ba ON b.ISBN = ba.ISBN
     LEFT JOIN author a ON ba.AuthorID = a.AuthorID
-    LIMIT 100
+    LIMIT 32
 ";
 
 $result = $conn->query($sql);
@@ -27,4 +29,3 @@ if ($result) {
 
 echo json_encode($books);
 ?>
-

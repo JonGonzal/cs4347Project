@@ -1,6 +1,6 @@
 <?php
-require_once 'db.php';
 session_start();
+require_once __DIR__ .'/db.php';
 
 $login_error = "";
 $signup_error = "";
@@ -22,7 +22,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'login') {
         $login_error = "Invalid username or password.";
     }
 }
-
 if (isset($_POST['action']) && $_POST['action'] === 'signup') {
     $username = $_POST['username'];
     $password = $_POST['password']; 

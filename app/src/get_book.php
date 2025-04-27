@@ -1,12 +1,22 @@
 <?php
-require 'db.php';
+session_start();
+header('Content-Type: application/json');
 
-if (!isset($_GET['q'])) {
+// Always enable error reporting during development
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once __DIR__ . '/db.php'; // <-- FIXED path!
+
+// Check if query parameter 'q' exists
+if (!isset($_GET['q']) || empty($_GET['q'])) {
+    http_response_code(400); // 400 Bad Request
     echo json_encode(['error' => 'Missing query']);
     exit();
 }
 
-$isbn = $conn->real_escape_string($_GET['q']);
+$isbn = $_GET['q'];
 
 $sql = "
 SELECT 
@@ -19,7 +29,7 @@ SELECT
   b.Pages,
   i.Price,
   i.Qty,
-  a.AuthorName,
+  GROUP_CONCAT(DISTINCT a.AuthorName SEPARATOR ', ') AS AuthorName,
   GROUP_CONCAT(DISTINCT g.Genre_name SEPARATOR ', ') AS Genres,
   GROUP_CONCAT(DISTINCT t.Keyword SEPARATOR ', ') AS Awards
 FROM book b
@@ -30,16 +40,28 @@ LEFT JOIN book_genres bg ON b.ISBN = bg.ISBN
 LEFT JOIN genres g ON bg.GenreID = g.GenreID
 LEFT JOIN tagged_as ta ON b.ISBN = ta.ISBN
 LEFT JOIN tag t ON ta.TagID = t.TagID
-WHERE b.ISBN = '$isbn'
+WHERE b.ISBN = ?
 GROUP BY b.ISBN
 ";
 
-$result = $conn->query($sql);
 
-if ($result && $result->num_rows > 0) {
-    $book = $result->fetch_assoc();
+$stmt = $conn->prepare($sql);
+
+if (!$stmt) {
+    http_response_code(500); // Server error
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    exit();
+}
+
+$stmt->bind_param("s", $isbn);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result && $book = $result->fetch_assoc()) {
     echo json_encode($book);
 } else {
+    http_response_code(404); // 404 Not Found
     echo json_encode(['error' => 'Book not found']);
 }
 ?>
+
