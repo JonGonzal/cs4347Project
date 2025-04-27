@@ -1,8 +1,26 @@
 <?php
 session_start();
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['user_id'])) {
   header('Location: auth.php');
   exit;
+}
+require_once 'db.php';
+
+$id = $_SESSION['user_id'];
+
+$sql = "SELECT username, fname, lname, email FROM customer WHERE CustomerID = '$id'";
+$result = $conn->query($sql);
+
+$customer = null;
+if ($result && $row = $result->fetch_assoc()) {
+    $customer = $row;
+} else {
+    $customer = [
+        'username' => '',
+        'fname' => '',
+        'lname' => '',
+        'email' => ''
+    ];
 }
 ?>
 
@@ -33,7 +51,17 @@ if (!isset($_SESSION['username'])) {
 
 <div class="container mt-4">
   <h1 class="mb-4">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h1>
-
+  <div class="card mb-4">
+  <div class="card-body">
+    <h5 class="card-title">Your Account Information</h5>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item"><strong>Username:</strong> <?php echo htmlspecialchars($customer['username']); ?></li>
+      <li class="list-group-item"><strong>First Name:</strong> <?php echo htmlspecialchars($customer['fname']); ?></li>
+      <li class="list-group-item"><strong>Last Name:</strong> <?php echo htmlspecialchars($customer['lname']); ?></li>
+      <li class="list-group-item"><strong>Email:</strong> <?php echo htmlspecialchars($customer['email']); ?></li>
+    </ul>
+  </div>
+</div>
   <div class="row" id="bookList">
     <!-- Books will be populated by JS -->
   </div>

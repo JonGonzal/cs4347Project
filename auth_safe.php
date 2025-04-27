@@ -10,8 +10,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'login') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $sql = "SELECT CustomerID, password FROM customer WHERE username = '$username' AND password = '$password'";
-    $result = $conn->query($sql);
+    $stmt = $conn->prepare("SELECT CustomerID, password FROM customer WHERE username = ? AND password = ?");
+    $stmt->bind_param("ss", $username, $password);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result && $row = $result->fetch_assoc()) {
         $_SESSION['user_id'] = $row['CustomerID'];
@@ -20,6 +22,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'login') {
     } else {
         $login_error = "Invalid username or password.";
     }
+    $stmt->close();
 }
 
 if (isset($_POST['action']) && $_POST['action'] === 'signup') {
@@ -29,29 +32,33 @@ if (isset($_POST['action']) && $_POST['action'] === 'signup') {
     $lname = $_POST['lname'];
     $email = $_POST['email'];
 
+    $stmt = $conn->prepare("INSERT INTO customer (username, password, fname, lname, email) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $username, $password, $fname, $lname, $email);
 
-    $sql = "INSERT INTO customer (username, password, fname, lname, email) 
-            VALUES ('$username', '$password', '$fname', '$lname', '$email')";
-
-    if ($conn->query($sql) === TRUE) {
-        $signup_success = "Account created successfully! You can now log in.";
+    if ($stmt->execute()) {
+        $signup_success = "Account created successfully!";
     } else {
-        $signup_error = "Signup failed. Username might be taken.";
+        $signup_error = "Signup failed.";
     }
+    $stmt->close();
 }
 
 if (isset($_POST['action']) && $_POST['action'] === 'reset') {
-  $email = $_POST['email'];
-  $new_password = $_POST['new_password'];
+    $email = $_POST['email'];
+    $new_password = $_POST['new_password'];
 
-  $sql = "UPDATE customer SET password = '$new_password' WHERE email = '$email'";
-  if ($conn->query($sql) === TRUE) {
-      $signup_success = "Password reset successful! You can now log in.";
-  } else {
-      $signup_error = "Password reset failed.";
-  }
+    $stmt = $conn->prepare("UPDATE customer SET password = ? WHERE email = ?");
+    $stmt->bind_param("ss", $new_password, $email);
+
+    if ($stmt->execute()) {
+        $signup_success = "Password reset successful!";
+    } else {
+        $signup_error = "Password reset failed.";
+    }
+    $stmt->close();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
