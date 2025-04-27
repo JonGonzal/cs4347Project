@@ -77,7 +77,7 @@ if (!isset($_SESSION['user_id'])) {
           </div>
           <button class="btn btn-primary w-100">Proceed to Checkout</button>
           <div class="text-center mt-3">
-            <a href="index.php" class="btn btn-link">Continue Shopping</a> <!-- ✅ Corrected -->
+            <a href="index.php" class="btn btn-link">Continue Shopping</a>
           </div>
         </div>
       </div>
@@ -97,7 +97,8 @@ function renderCart() {
   let subtotal = 0;
 
   cart.forEach((item, index) => {
-    const itemTotal = item.quantity * 9.99;
+    const itemPrice = parseFloat(item.price) || 0; // 🛠 Get REAL price from cart
+    const itemTotal = itemPrice * item.quantity;
     subtotal += itemTotal;
 
     const coverURL = item.isbn
@@ -106,28 +107,30 @@ function renderCart() {
 
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>
-        <div class="d-flex align-items-center">
-          <img src="${coverURL}" alt="Book Cover" class="me-3" style="width: 50px; height: auto;" onerror="this.src='https://via.placeholder.com/50?text=No+Cover'">
-          <div>
-            <h6 class="mb-0">${item.title}</h6>
-            <small class="text-muted">By ${item.author}</small><br>
-            <small class="text-muted">Format: ${item.format ?? 'Unknown Format'}</small>
+      <tr>
+        <td>
+          <div class="d-flex align-items-center">
+            <img src="${coverURL}" alt="Book Cover" class="me-3" style="width: 50px; height: auto;" onerror="this.src='https://via.placeholder.com/50?text=No+Cover'">
+            <div>
+              <h6 class="mb-0">${item.title}</h6>
+              <small class="text-muted">By ${item.author}</small><br>
+              <small class="text-muted">Format: ${item.format ?? 'Unknown Format'}</small>
+            </div>
           </div>
-        </div>
-      </td>
-      <td>$9.99</td>
-      <td>
-        <div class="input-group" style="width: auto; min-width: 120px;">
-          <button class="btn btn-outline-secondary px-2" onclick="updateQuantity(${index}, -1)">-</button>
-          <input type="text" class="form-control text-center" value="${item.quantity}" readonly style="width: 50px; min-width: 0; padding: 6px 8px; font-size: 1rem;">
-          <button class="btn btn-outline-secondary px-2" onclick="updateQuantity(${index}, 1)">+</button>
-        </div>
-      </td>
-      <td>$${itemTotal.toFixed(2)}</td>
-      <td>
-        <button class="btn btn-outline-danger btn-sm" onclick="removeItem(${index})">🗑️</button>
-      </td>
+        </td>
+        <td>$${itemPrice.toFixed(2)}</td>
+        <td>
+          <div class="input-group" style="width: auto; min-width: 120px;">
+            <button class="btn btn-outline-secondary px-2" onclick="updateQuantity(${index}, -1)">-</button>
+            <input type="text" class="form-control text-center" value="${item.quantity}" readonly style="width: 50px; min-width: 0; padding: 6px 8px; font-size: 1rem;">
+            <button class="btn btn-outline-secondary px-2" onclick="updateQuantity(${index}, 1)">+</button>
+          </div>
+        </td>
+        <td>$${itemTotal.toFixed(2)}</td>
+        <td>
+          <button class="btn btn-outline-danger btn-sm" onclick="removeItem(${index})">🗑️</button>
+        </td>
+      </tr>
     `;
     tbody.appendChild(row);
   });
@@ -158,7 +161,6 @@ function removeItem(index) {
 
 renderCart();
 
-// ✅ Fixed search to go to book.php
 document.getElementById('searchForm').addEventListener('submit', function(e) {
   e.preventDefault();
   const searchValue = document.getElementById('searchInput').value.trim();

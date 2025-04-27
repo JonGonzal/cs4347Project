@@ -1,35 +1,45 @@
 <?php
 require 'db.php';
 
-header('Content-Type: application/json');
+if (!isset($_GET['q'])) {
+    echo json_encode(['error' => 'Missing query']);
+    exit();
+}
 
-if (isset($_GET['q']) && !empty(trim($_GET['q']))) {
-    $search = trim($_GET['q']);
-    $searchWildcard = "%" . $search . "%";
+$isbn = $conn->real_escape_string($_GET['q']);
 
-    $stmt = $conn->prepare("
-        SELECT 
-            Title,
-            ISBN,
-            Summary,
-            Edition,
-            Rating,
-            Format
-        FROM book
-        WHERE ISBN = ? OR TRIM(Title) LIKE ?
-        LIMIT 1
-    ");
-    $stmt->bind_param("ss", $search, $searchWildcard);
-    $stmt->execute();
-    $result = $stmt->get_result();
+$sql = "
+SELECT 
+  b.ISBN,
+  b.Title,
+  b.Summary,
+  b.Edition,
+  b.Rating,
+  b.Format,
+  b.Pages,
+  i.Price,
+  i.Qty,
+  a.AuthorName,
+  GROUP_CONCAT(DISTINCT g.Genre_name SEPARATOR ', ') AS Genres,
+  GROUP_CONCAT(DISTINCT t.Keyword SEPARATOR ', ') AS Awards
+FROM book b
+LEFT JOIN inventory i ON b.ISBN = i.ISBN
+LEFT JOIN book_authorship ba ON b.ISBN = ba.ISBN
+LEFT JOIN author a ON ba.AuthorID = a.AuthorID
+LEFT JOIN book_genres bg ON b.ISBN = bg.ISBN
+LEFT JOIN genres g ON bg.GenreID = g.GenreID
+LEFT JOIN tagged_as ta ON b.ISBN = ta.ISBN
+LEFT JOIN tag t ON ta.TagID = t.TagID
+WHERE b.ISBN = '$isbn'
+GROUP BY b.ISBN
+";
 
-    if ($book = $result->fetch_assoc()) {
-        echo json_encode($book);
-    } else {
-        echo json_encode(["error" => "Book not found"]);
-    }
+$result = $conn->query($sql);
+
+if ($result && $result->num_rows > 0) {
+    $book = $result->fetch_assoc();
+    echo json_encode($book);
 } else {
-    echo json_encode(["error" => "No search term provided"]);
+    echo json_encode(['error' => 'Book not found']);
 }
 ?>
-

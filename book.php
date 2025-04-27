@@ -40,14 +40,21 @@ if (!isset($_SESSION['user_id'])) {
       <div class="mt-4">
         <h5>Summary</h5>
         <p id="bookSummary">No summary available.</p>
+        <button id="toggleSummaryBtn" class="btn btn-link p-0" style="display: none;">View More</button>
       </div>
       <div class="mt-4">
         <h5>Details</h5>
         <ul class="list-unstyled">
-          <li><strong>ISBN:</strong> <span id="bookISBN">N/A</span></li>
+          <li><strong>Price:</strong> $<span id="bookPrice">N/A</span></li>
+          <li><strong>Stock:</strong> <span id="bookQty">N/A</span></li>
+          <li><strong>Pages:</strong> <span id="bookPages">N/A</span></li>
           <li><strong>Format:</strong> <span id="bookFormat">N/A</span></li>
+          <li><strong>Genres:</strong> <span id="bookGenres">N/A</span></li>
+          <li><strong>Awards:</strong> <span id="bookAwards">N/A</span></li>
+          <li><strong>ISBN:</strong> <span id="bookISBN">N/A</span></li>
         </ul>
       </div>
+
       <div class="mt-4">
         <button class="btn btn-primary btn-lg" id="addToCart" disabled>Add to Cart</button>
       </div>
@@ -66,79 +73,78 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch(`get_book.php?q=${encodeURIComponent(searchQuery)}`)
       .then(res => res.json())
       .then(data => {
-        console.log("Fetched data:", data);
-
         if (data && !data.error) {
           document.title = `${data.Title || 'Untitled'} - Book Details`;
           document.getElementById('bookTitle').textContent = data.Title || 'Untitled';
-          document.getElementById('bookISBN').textContent = data.ISBN || 'N/A';
+          document.getElementById('bookAuthor').textContent = `By ${data.AuthorName || 'Unknown Author'}`;
           document.getElementById('bookEdition').textContent = data.Edition || 'N/A';
           document.getElementById('bookRating').textContent = data.Rating || 'N/A';
-          document.getElementById('bookSummary').textContent = data.Summary || 'No summary available.';
+          const fullSummary = data.Summary || 'No summary available.';
+const previewLength = 50; // Number of words to preview
+const words = fullSummary.split(' ');
+
+const bookSummary = document.getElementById('bookSummary');
+const toggleBtn = document.getElementById('toggleSummaryBtn');
+
+if (words.length > previewLength) {
+  const preview = words.slice(0, previewLength).join(' ') + '...';
+  bookSummary.textContent = preview;
+  toggleBtn.style.display = 'inline'; // Show the toggle button
+
+  let expanded = false;
+
+  toggleBtn.addEventListener('click', () => {
+    if (expanded) {
+      bookSummary.textContent = preview;
+      toggleBtn.textContent = 'View More';
+    } else {
+      bookSummary.textContent = fullSummary;
+      toggleBtn.textContent = 'View Less';
+    }
+    expanded = !expanded;
+  });
+} else {
+  bookSummary.textContent = fullSummary;
+}
+
+          document.getElementById('bookPrice').textContent = data.Price ? parseFloat(data.Price).toFixed(2) : 'N/A';
+          document.getElementById('bookQty').textContent = data.Qty || 'N/A';
+          document.getElementById('bookPages').textContent = data.Pages || 'N/A';
           document.getElementById('bookFormat').textContent = data.Format || 'Unknown Format';
+          document.getElementById('bookGenres').textContent = data.Genres || 'N/A';
+          document.getElementById('bookAwards').textContent = data.Awards || 'N/A';
+          document.getElementById('bookISBN').textContent = data.ISBN || 'N/A';
 
           const coverURL = data.ISBN
             ? `https://covers.openlibrary.org/b/isbn/${data.ISBN}-L.jpg`
             : 'https://via.placeholder.com/400x600?text=No+Cover';
           document.getElementById('bookCover').src = coverURL;
 
-          if (data.ISBN) {
-            fetch(`get_author.php?isbn=${encodeURIComponent(data.ISBN)}`)
-              .then(res => res.json())
-              .then(authorData => {
-                if (authorData && authorData.AuthorName) {
-                  document.getElementById('bookAuthor').textContent = `By ${authorData.AuthorName}`;
-                } else {
-                  document.getElementById('bookAuthor').textContent = 'By Unknown Author';
-                }
+          document.getElementById('addToCart').disabled = false;
 
-                document.getElementById('addToCart').disabled = false;
-                document.getElementById('addToCart').addEventListener('click', () => {
-                  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-                  const existing = cart.find(item => item.isbn === (data.ISBN || ''));
+          // ✅ Add to Cart CLICK event here:
+          document.getElementById('addToCart').addEventListener('click', () => {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-                  if (existing) {
-                    existing.quantity += 1;
-                  } else {
-                    cart.push({
-                      title: data.Title || 'Untitled',
-                      author: document.getElementById('bookAuthor').textContent.replace('By ', '') || 'Unknown Author',
-                      isbn: data.ISBN || '',
-                      format: data.Format || 'Unknown Format',
-                      quantity: 1
-                    });
-                  }
+            const existing = cart.find(item => item.isbn === (data.ISBN || ''));
 
-                  localStorage.setItem('cart', JSON.stringify(cart));
-                  alert(`${data.Title || 'Book'} added to cart!`);
-                });
-              })
-              .catch(err => {
-                console.error("Author fetch error:", err);
-                document.getElementById('bookAuthor').textContent = 'By Unknown Author';
-
-                document.getElementById('addToCart').disabled = false;
-                document.getElementById('addToCart').addEventListener('click', () => {
-                  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-                  const existing = cart.find(item => item.isbn === (data.ISBN || ''));
-
-                  if (existing) {
-                    existing.quantity += 1;
-                  } else {
-                    cart.push({
-                      title: data.Title || 'Untitled',
-                      author: document.getElementById('bookAuthor').textContent.replace('By ', '') || 'Unknown Author',
-                      isbn: data.ISBN || '',
-                      format: data.Format || 'Unknown Format',
-                      quantity: 1
-                    });
-                  }
-
-                  localStorage.setItem('cart', JSON.stringify(cart));
-                  alert(`${data.Title || 'Book'} added to cart!`);
-                });
+            if (existing) {
+              existing.quantity += 1;
+            } else {
+              cart.push({
+                title: data.Title || 'Untitled',
+                author: data.AuthorName || 'Unknown Author',
+                isbn: data.ISBN || '',
+                format: data.Format || 'Unknown Format',
+                price: data.Price || 0,
+                quantity: 1
               });
-          }
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${data.Title || 'Book'} added to cart!`);
+          });
+
         } else {
           document.querySelector('.container').innerHTML = `
             <div class="alert alert-warning" role="alert">
