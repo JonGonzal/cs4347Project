@@ -7,38 +7,54 @@ $signup_error = "";
 $signup_success = "";
 
 if (isset($_POST['action']) && $_POST['action'] === 'login') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+  $username = $_POST['username'];
+  $password = $_POST['password'];
 
-    $sql = "SELECT CustomerID, password FROM customer WHERE username = '$username' AND password = '$password'";
-    $result = $conn->query($sql);
+  $sql = "SELECT CustomerID, password FROM customer WHERE username = '$username' AND password = '$password'";
+  $result = $conn->query($sql);
 
-    if ($result && $row = $result->fetch_assoc()) {
-        $_SESSION['user_id'] = $row['CustomerID'];
-        $_SESSION['username'] = $username;
-        header('Location: index.php');
-        exit();
-    } else {
-        $login_error = "Invalid username or password.";
-    }
+  if ($result && $row = $result->fetch_assoc()) {
+    $_SESSION['user_id'] = $row['CustomerID'];
+    $_SESSION['username'] = $username;
+    header('Location: index.php');
+    exit();
+  } else {
+    $login_error = "Invalid username or password.";
+  }
 }
 if (isset($_POST['action']) && $_POST['action'] === 'signup') {
-    $username = $_POST['username'];
-    $password = $_POST['password']; 
-    $fname = $_POST['fname'];
-    $lname = $_POST['lname'];
-    $email = $_POST['email'];
+  $username = $_POST['username'];
+  $password = $_POST['password']; 
+  $fname = $_POST['fname'];
+  $lname = $_POST['lname'];
+  $email = $_POST['email'];
 
 
-    $sql = "INSERT INTO customer (username, password, fname, lname, email) 
-            VALUES ('$username', '$password', '$fname', '$lname', '$email')";
+  $sql = "INSERT INTO customer (username, password, fname, lname, email) 
+    VALUES ('$username', '$password', '$fname', '$lname', '$email')";
 
-    if ($conn->query($sql) === TRUE) {
-        $signup_success = "Account created successfully! You can now log in.";
-    } else {
-        $signup_error = "Signup failed. Username might be taken.";
-    }
+  if ($conn->query($sql) === TRUE) {
+    $signup_success = "Account created successfully! You can now log in.";
+  } else {
+    $signup_error = "Signup failed. Username might be taken.";
+  }
 }
+
+$show_reset_form = false;
+if (isset($_POST['action']) && $_POST['action'] === 'reset') {
+  $email = $_POST['email'];
+  $new_password = $_POST['new_password'];
+
+  $sql = "UPDATE customer SET password = '$new_password' WHERE email = '$email'";
+  if ($conn->query($sql) === TRUE) {
+    $signup_success = "Password reset successful! You can now log in.";
+  } else {
+    $signup_error = "Password reset failed.";
+  }
+
+  $show_reset_form = true;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,13 +113,13 @@ if (isset($_POST['action']) && $_POST['action'] === 'signup') {
 <body>
 
 <div class="card">
-  <div class="tab-buttons">
+  <div id="tabButtons" class="tab-buttons">
     <button id="loginTab" class="active">Login</button>
     <button id="signupTab">Sign Up</button>
   </div>
 
   <div id="loginForm" class="form-container active">
-    <h3 class="text-center mb-4">Welcome Back!</h3>
+  <h3 class="text-center mb-4">Welcome Back!</h3>
     <?php if (!empty($login_error)) echo "<div class='alert alert-danger'>$login_error</div>"; ?>
     <?php if (!empty($signup_success)) echo "<div class='alert alert-success'>$signup_success</div>"; ?>
     <form method="post">
@@ -114,8 +130,17 @@ if (isset($_POST['action']) && $_POST['action'] === 'signup') {
       <div class="mb-3">
         <input type="password" class="form-control" name="password" placeholder="Password" required>
       </div>
-      <button type="submit" class="btn btn-primary w-100">Login</button>
+      <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>
     </form>
+
+    <div class="text-center mt-2">
+      <a href="#" id="forgotPasswordLink">Forgot Password</a>
+    </div>
+
+    <div class="text-center mt-1">
+      <a href="auth_safe.php" style="color: #ececec; text-decoration: none;" class="auth">safe auth</a>
+    </div>
+
   </div>
 
   <div id="signupForm" class="form-container">
@@ -141,34 +166,92 @@ if (isset($_POST['action']) && $_POST['action'] === 'signup') {
       <button type="submit" class="btn btn-success w-100">Sign Up</button>
     </form>
   </div>
+  <div id="resetForm" class="form-container">
+    <h3 class="text-center mb-4">Reset Password</h3>
+    <form method="post">
+      <input type="hidden" name="action" value="reset">
+      <div class="mb-3">
+        <input type="text" class="form-control" name="email" placeholder="Enter your email" required>
+      </div>
+      <div class="mb-3">
+        <input type="password" class="form-control" name="new_password" placeholder="New Password" required>
+      </div>
+      <button type="submit" class="btn btn-warning w-100">Reset Password</button>
+    </form>
+
+    <div class="text-center mt-2">
+      <a href="#" id="backToLoginLink">Back to Login</a>
+    </div>
+</div>
 </div>
 
-<script>
-  const loginTab = document.getElementById('loginTab');
-  const signupTab = document.getElementById('signupTab');
-  const loginForm = document.getElementById('loginForm');
-  const signupForm = document.getElementById('signupForm');
+</div>
 
-  loginTab.addEventListener('click', () => {
-    loginTab.classList.add('active');
+
+<script>
+const loginTab = document.getElementById('loginTab');
+const signupTab = document.getElementById('signupTab');
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+const resetForm = document.getElementById('resetForm');
+const tabButtons = document.getElementById('tabButtons');
+
+loginTab.addEventListener('click', () => {
+loginTab.classList.add('active');
+signupTab.classList.remove('active');
+loginForm.classList.add('active');
+signupForm.classList.remove('active');
+resetForm.classList.remove('active');
+tabButtons.style.display = 'flex';
+});
+
+signupTab.addEventListener('click', () => {
+signupTab.classList.add('active');
+loginTab.classList.remove('active');
+signupForm.classList.add('active');
+loginForm.classList.remove('active');
+resetForm.classList.remove('active');
+tabButtons.style.display = 'flex';
+});
+
+const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+  const backToLoginLink = document.getElementById('backToLoginLink');
+
+  forgotPasswordLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginForm.classList.remove('active');
+    signupForm.classList.remove('active');
+    resetForm.classList.add('active');
+    loginTab.classList.remove('active');
     signupTab.classList.remove('active');
+    tabButtons.style.display = 'none';
+  });
+
+  backToLoginLink.addEventListener('click', (e) => {
+    e.preventDefault();
     loginForm.classList.add('active');
     signupForm.classList.remove('active');
+    resetForm.classList.remove('active');
+    loginTab.classList.add('active');
+    signupTab.classList.remove('active');
+    tabButtons.style.display = 'flex';
   });
 
-  signupTab.addEventListener('click', () => {
-    signupTab.classList.add('active');
-    loginTab.classList.remove('active');
-    signupForm.classList.add('active');
-    loginForm.classList.remove('active');
-  });
+<?php if (!empty($signup_error)) : ?>
+signupTab.classList.add('active');
+loginTab.classList.remove('active');
+signupForm.classList.add('active');
+loginForm.classList.remove('active');
+<?php endif; ?>
 
-  <?php if (!empty($signup_error)) : ?>
-    signupTab.classList.add('active');
-    loginTab.classList.remove('active');
-    signupForm.classList.add('active');
-    loginForm.classList.remove('active');
-  <?php endif; ?>
+<?php if ($show_reset_form) : ?>
+loginForm.classList.remove('active');
+signupForm.classList.remove('active');
+resetForm.classList.add('active');
+loginTab.classList.remove('active');
+signupTab.classList.remove('active');
+<?php endif; ?>
+
 </script>
 
 </body>
