@@ -65,7 +65,7 @@ if (!isset($_SESSION['username'])) {
 
       books.forEach(book => {
         const col = document.createElement('div');
-        col.className = 'col-md-4 mb-4';
+        col.className = 'col-md-2 mb-3';
         
         const coverURL = book.ISBN 
           ? `https://covers.openlibrary.org/b/isbn/${book.ISBN}-L.jpg`
