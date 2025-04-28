@@ -10,12 +10,13 @@ if (isset($_POST['action']) && $_POST['action'] === 'login') {
   $username = $_POST['username'];
   $password = $_POST['password'];
 
-  $sql = "SELECT CustomerID, password FROM customer WHERE username = '$username' AND password = '$password'";
+  $sql = "SELECT CustomerID, fname, password FROM customer WHERE username = '$username' AND password = '$password'";
   $result = $conn->query($sql);
 
   if ($result && $row = $result->fetch_assoc()) {
     $_SESSION['user_id'] = $row['CustomerID'];
     $_SESSION['username'] = $username;
+    $_SESSION['fname'] = $row['fname'];
     header('Location: index.php');
     exit();
   } else {

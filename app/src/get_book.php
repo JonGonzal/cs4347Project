@@ -60,7 +60,7 @@ $result = $stmt->get_result();
 if ($result && $book = $result->fetch_assoc()) {
     echo json_encode($book);
 } else {
-    http_response_code(404); // 404 Not Found
+    http_response_code(404);
     echo json_encode(['error' => 'Book not found']);
 }
 ?>

@@ -17,16 +17,8 @@ if (!isset($_SESSION['user_id'])) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="index.php">Home</a>
-    <form class="d-flex ms-auto me-2" role="search" id="searchForm">
-      <input class="form-control me-2" type="search" placeholder="Search" id="searchInput">
-      <button class="btn btn-outline-success" type="submit">Search</button>
-    </form>
-    <a class="nav-link" href="cart.php">🛒</a>
-  </div>
-</nav>
+
+<?php include 'header.php';?>
 
 <div class="container mt-4">
   <div class="row">
@@ -69,6 +61,8 @@ if (!isset($_SESSION['user_id'])) {
     </div>
   </div>
 </div>
+
+<script src="header.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -178,13 +172,6 @@ if (words.length > previewLength) {
       });
   }
 
-  document.getElementById('searchForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const searchValue = document.getElementById('searchInput').value.trim();
-    if (searchValue) {
-      window.location.href = `book.php?q=${encodeURIComponent(searchValue)}`;
-    }
-  });
 });
 </script>
 

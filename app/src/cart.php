@@ -14,17 +14,8 @@ if (!isset($_SESSION['user_id'])) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="index.php">Home</a>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <form class="d-flex ms-auto me-2" role="search" id="searchForm">
-        <input class="form-control me-2" type="search" placeholder="Search" id="searchInput">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</nav>
+
+<?php include 'header.php';?>
 
 <div class="container mt-4">
   <h1 class="mb-4">Your Shopping Cart</h1>
@@ -85,6 +76,7 @@ if (!isset($_SESSION['user_id'])) {
   </div>
 </div>
 
+<script src="header.js"></script>
 <script>
 function renderCart() {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
