@@ -20,7 +20,7 @@
     - Assignment 6
 
 ```
-## Installing instructions
+## Installation instructions
 
 Windows: 
 
