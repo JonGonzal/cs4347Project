@@ -31,7 +31,11 @@ if (!isset($_SESSION['user_id'])) {
 <div class="container mt-4">
   <div class="row">
     <div class="col-md-4">
-      <img id="bookCover" src="/covers/placeholder.jpg" class="img-fluid rounded" alt="Book Cover">
+      <img id="bookCover"
+           src="covers/placeholder.png"
+           class="img-fluid rounded"
+           alt="Book Cover"
+           onerror="this.onerror=null; this.src='covers/placeholder.png';">
     </div>
     <div class="col-md-8">
       <h1 id="bookTitle">Book Title</h1>
@@ -60,6 +64,7 @@ if (!isset($_SESSION['user_id'])) {
 
       <div class="mt-4">
         <button class="btn btn-primary btn-lg" id="addToCart" disabled>Add to Cart</button>
+        <div id="messageContainer" class="my-3"</div>
       </div>
     </div>
   </div>
@@ -120,33 +125,40 @@ if (words.length > previewLength) {
 
           const coverURL = data.ISBN
             ? `https://covers.openlibrary.org/b/isbn/${data.ISBN}-L.jpg`
-            : 'covers/placeholder.jpg';
+            : 'covers/placeholder.png';
           document.getElementById('bookCover').src = coverURL;
 
           document.getElementById('addToCart').disabled = false;
 
-          // ✅ Add to Cart CLICK event here:
           document.getElementById('addToCart').addEventListener('click', () => {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+          const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-            const existing = cart.find(item => item.isbn === (data.ISBN || ''));
+          const existing = cart.find(item => item.isbn === (data.ISBN || ''));
 
-            if (existing) {
-              existing.quantity += 1;
-            } else {
-              cart.push({
-                title: data.Title || 'Untitled',
-                author: data.AuthorName || 'Unknown Author',
-                isbn: data.ISBN || '',
-                format: data.Format || 'Unknown Format',
-                price: data.Price || 0,
-                quantity: 1
-              });
-            }
+          if (existing) {
+            existing.quantity += 1;
+          } else {
+            cart.push({
+              title: data.Title || 'Untitled',
+              author: data.AuthorName || 'Unknown Author',
+              isbn: data.ISBN || '',
+              format: data.Format || 'Unknown Format',
+              price: data.Price || 0,
+              quantity: 1
+            });
+          }
 
-            localStorage.setItem('cart', JSON.stringify(cart));
-            alert(`${data.Title || 'Book'} added to cart!`);
-          });
+          localStorage.setItem('cart', JSON.stringify(cart));
+
+          const messageContainer = document.getElementById('messageContainer');
+
+          messageContainer.innerHTML = `
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <strong>${data.Title || 'Book'}</strong> added to cart!
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          `;
+        });
 
         } else {
           document.querySelector('.container').innerHTML = `

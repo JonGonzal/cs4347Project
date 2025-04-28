@@ -8,19 +8,20 @@ if (isset($_GET['q']) && !empty(trim($_GET['q']))) {
     $searchWildcard = "%" . $search . "%";
 
     $stmt = $conn->prepare("
-        SELECT 
-            b.Title, 
-            b.ISBN, 
-            a.AuthorName
-        FROM book b
-        LEFT JOIN book_authorship ba ON b.ISBN = ba.ISBN
-        LEFT JOIN author a ON ba.AuthorID = a.AuthorID
-        WHERE TRIM(b.Title) LIKE ?
-        LIMIT 10
+          SELECT 
+                b.Title, 
+                b.ISBN, 
+                a.AuthorName
+            FROM book b
+            LEFT JOIN book_authorship ba ON b.ISBN = ba.ISBN
+            LEFT JOIN author a ON ba.AuthorID = a.AuthorID
+            WHERE (TRIM(b.Title) LIKE ? OR TRIM(a.AuthorName) LIKE ?)
+            ORDER BY b.Title ASC
+            LIMIT 32
     ");
 
     if ($stmt) {
-        $stmt->bind_param("s", $searchWildcard);
+        $stmt->bind_param("ss", $searchWildcard, $searchWildcard);
         $stmt->execute();
         $result = $stmt->get_result();
 

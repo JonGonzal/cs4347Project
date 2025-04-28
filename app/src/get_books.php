@@ -14,7 +14,7 @@ $sql = "
     FROM book b
     LEFT JOIN book_authorship ba ON b.ISBN = ba.ISBN
     LEFT JOIN author a ON ba.AuthorID = a.AuthorID
-    LIMIT 32
+    ORDER BY RAND() LIMIT 32
 ";
 
 $result = $conn->query($sql);
