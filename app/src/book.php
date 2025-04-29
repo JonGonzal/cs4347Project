@@ -82,32 +82,32 @@ document.addEventListener("DOMContentLoaded", () => {
           document.getElementById('bookEdition').textContent = data.Edition || 'N/A';
           document.getElementById('bookRating').textContent = data.Rating || 'N/A';
           const fullSummary = data.Summary || 'No summary available.';
-const previewLength = 50; // Number of words to preview
-const words = fullSummary.split(' ');
+          const previewLength = 50; // Number of words to preview
+          const words = fullSummary.split(' ');
 
-const bookSummary = document.getElementById('bookSummary');
-const toggleBtn = document.getElementById('toggleSummaryBtn');
+          const bookSummary = document.getElementById('bookSummary');
+          const toggleBtn = document.getElementById('toggleSummaryBtn');
 
-if (words.length > previewLength) {
-  const preview = words.slice(0, previewLength).join(' ') + '...';
-  bookSummary.textContent = preview;
-  toggleBtn.style.display = 'inline'; // Show the toggle button
+    if (words.length > previewLength) {
+        const preview = words.slice(0, previewLength).join(' ') + '...';
+        bookSummary.textContent = preview;
+        toggleBtn.style.display = 'inline'; // Show the toggle button
 
-  let expanded = false;
+        let expanded = false;
 
-  toggleBtn.addEventListener('click', () => {
-    if (expanded) {
-      bookSummary.textContent = preview;
-      toggleBtn.textContent = 'View More';
-    } else {
-      bookSummary.textContent = fullSummary;
-      toggleBtn.textContent = 'View Less';
+        toggleBtn.addEventListener('click', () => {
+          if (expanded) {
+            bookSummary.textContent = preview;
+            toggleBtn.textContent = 'View More';
+          } else {
+            bookSummary.textContent = fullSummary;
+            toggleBtn.textContent = 'View Less';
+          }
+          expanded = !expanded;
+        });
+      } else {
+        bookSummary.textContent = fullSummary;
     }
-    expanded = !expanded;
-  });
-} else {
-  bookSummary.textContent = fullSummary;
-}
 
           document.getElementById('bookPrice').textContent = data.Price ? parseFloat(data.Price).toFixed(2) : 'N/A';
           document.getElementById('bookQty').textContent = data.Qty || 'N/A';

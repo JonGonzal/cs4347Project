@@ -22,10 +22,20 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: lemma_books
+      MYSQL_ROOT_PASSWORD: 'test'
     ports:
       - "3308:3306"
     volumes:
       - ./data/mysql:/var/lib/mysql
       - ./database/lemma_books.sql:/docker-entrypoint-initdb.d/lemma_books.sql
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: mysql
+    depends_on:
+      - mysql
