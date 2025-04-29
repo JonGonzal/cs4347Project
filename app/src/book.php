@@ -45,7 +45,7 @@ if (!isset($_SESSION['user_id'])) {
         <h5>Details</h5>
         <ul class="list-unstyled">
           <li><strong>Price:</strong> $<span id="bookPrice">N/A</span></li>
-          <li><strong>Stock:</strong> <span id="bookQty">N/A</span></li>
+          
           <li><strong>Pages:</strong> <span id="bookPages">N/A</span></li>
           <li><strong>Format:</strong> <span id="bookFormat">N/A</span></li>
           <li><strong>Genres:</strong> <span id="bookGenres">N/A</span></li>
@@ -110,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
           document.getElementById('bookPrice').textContent = data.Price ? parseFloat(data.Price).toFixed(2) : 'N/A';
-          document.getElementById('bookQty').textContent = data.Qty || 'N/A';
           document.getElementById('bookPages').textContent = data.Pages || 'N/A';
           document.getElementById('bookFormat').textContent = data.Format || 'Unknown Format';
           document.getElementById('bookGenres').textContent = data.Genres || 'N/A';

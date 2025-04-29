@@ -20,6 +20,24 @@ if (!isset($_SESSION['user_id'])) {
 <div class="container mt-4">
   <h1 class="mb-4">Your Shopping Cart</h1>
 
+  <!-- Add Modal -->
+  <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="checkoutModalLabel">Thank You For Your Purchase!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p>Your order has been successfully placed.</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <a href="index.php" class="btn btn-primary">Return to Shopping</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col-md-8">
       <div class="card">
@@ -66,7 +84,7 @@ if (!isset($_SESSION['user_id'])) {
             <strong>Total</strong>
             <strong id="total">$0.00</strong>
           </div>
-          <button class="btn btn-primary w-100">Proceed to Checkout</button>
+          <button class="btn btn-primary w-100" id="checkout">Proceed to Checkout</button>
           <div class="text-center mt-3">
             <a href="index.php" class="btn btn-link">Continue Shopping</a>
           </div>
@@ -207,6 +225,25 @@ document.getElementById('searchForm').addEventListener('submit', function(e) {
   if (searchValue) {
     window.location.href = `book.php?q=${encodeURIComponent(searchValue)}`;
   }
+});
+
+document.getElementById('checkout').addEventListener('click', () => {
+  // Clear the cart first
+  fetch('clear_cart.php')
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Show the thank you modal
+        const checkoutModal = new bootstrap.Modal(document.getElementById('checkoutModal'));
+        checkoutModal.show();
+      } else {
+        throw new Error(data.error || 'Failed to clear cart');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error during checkout: ' + error.message);
+    });
 });
 </script>
 
