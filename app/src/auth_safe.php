@@ -68,6 +68,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'reset') {
   <meta charset="UTF-8">
   <title>Login / Sign Up</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <style>
     body {
       background: #f5f5f5;
@@ -133,8 +134,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'reset') {
       <div class="mb-3">
         <input type="text" class="form-control" name="username" placeholder="Username" required>
       </div>
-      <div class="mb-3">
+
+      <div class="mb-3 position-relative">
         <input type="password" class="form-control" name="password" placeholder="Password" required>
+        <span class="toggle-password">O</span>
       </div>
       <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>
     </form>
@@ -179,9 +182,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'reset') {
       <div class="mb-3">
         <input type="text" class="form-control" name="email" placeholder="Enter your email" required>
       </div>
-      <div class="mb-3">
+
+      <div class="mb-3 position-relative">
         <input type="password" class="form-control" name="new_password" placeholder="New Password" required>
+        <span class="toggle-password">O</span>
       </div>
+
       <button type="submit" class="btn btn-warning w-100">Reset Password</button>
     </form>
 
@@ -242,6 +248,20 @@ const forgotPasswordLink = document.getElementById('forgotPasswordLink');
     signupTab.classList.remove('active');
     tabButtons.style.display = 'flex';
   });
+  
+  document.querySelectorAll('.toggle-password').forEach(span => {
+span.addEventListener('click', () => {
+  const input = span.previousElementSibling;
+  if (input.type === 'password') {
+    input.type = 'text';
+    span.textContent = '-';
+  } else {
+    input.type = 'password';
+    span.textContent = 'O';
+  }
+});
+});
+
 
 <?php if (!empty($signup_error)) : ?>
 signupTab.classList.add('active');
