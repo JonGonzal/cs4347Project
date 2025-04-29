@@ -125,34 +125,40 @@ document.addEventListener("DOMContentLoaded", () => {
           document.getElementById('addToCart').disabled = false;
 
           document.getElementById('addToCart').addEventListener('click', () => {
-          const cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-          const existing = cart.find(item => item.isbn === (data.ISBN || ''));
-
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            cart.push({
-              title: data.Title || 'Untitled',
-              author: data.AuthorName || 'Unknown Author',
-              isbn: data.ISBN || '',
-              format: data.Format || 'Unknown Format',
-              price: data.Price || 0,
-              quantity: 1
+            fetch('add_to_cart.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                isbn: data.ISBN || '',
+                quantity: 1
+              })
+            })
+            .then(response => response.json())
+            .then(result => {
+              if (result.success) {
+                const messageContainer = document.getElementById('messageContainer');
+                messageContainer.innerHTML = `
+                  <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>${data.Title || 'Book'}</strong> added to cart!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                `;
+              } else {
+                throw new Error(result.error || 'Failed to add to cart');
+              }
+            })
+            .catch(error => {
+              const messageContainer = document.getElementById('messageContainer');
+              messageContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  Error: ${error.message}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              `;
             });
-          }
-
-          localStorage.setItem('cart', JSON.stringify(cart));
-
-          const messageContainer = document.getElementById('messageContainer');
-
-          messageContainer.innerHTML = `
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-              <strong>${data.Title || 'Book'}</strong> added to cart!
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-          `;
-        });
+          });
 
         } else {
           document.querySelector('.container').innerHTML = `

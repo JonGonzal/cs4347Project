@@ -79,76 +79,124 @@ if (!isset($_SESSION['user_id'])) {
 <script src="header.js"></script>
 <script>
 function renderCart() {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  const tbody = document.querySelector("tbody");
-  const subtotalSpan = document.querySelector("#subtotal");
-  const taxSpan = document.querySelector("#tax");
-  const totalSpan = document.querySelector("#total");
+  fetch('get_cart.php')
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const tbody = document.querySelector("tbody");
+        const subtotalSpan = document.querySelector("#subtotal");
+        const taxSpan = document.querySelector("#tax");
+        const totalSpan = document.querySelector("#total");
 
-  tbody.innerHTML = "";
-  let subtotal = 0;
+        tbody.innerHTML = "";
+        let subtotal = 0;
 
-  cart.forEach((item, index) => {
-    const itemPrice = parseFloat(item.price) || 0; // 🛠 Get REAL price from cart
-    const itemTotal = itemPrice * item.quantity;
-    subtotal += itemTotal;
+        data.items.forEach((item, index) => {
+          const itemPrice = parseFloat(item.Price) || 0;
+          const itemTotal = itemPrice * item.Quantity;
+          subtotal += itemTotal;
 
-    const coverURL = item.isbn
-      ? `https://covers.openlibrary.org/b/isbn/${item.isbn}-S.jpg`
-      : 'https://via.placeholder.com/50?text=No+Cover';
+          const coverURL = item.ISBN
+            ? `https://covers.openlibrary.org/b/isbn/${item.ISBN}-S.jpg`
+            : 'https://via.placeholder.com/50?text=No+Cover';
 
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <tr>
-        <td>
-          <div class="d-flex align-items-center">
-            <img src="${coverURL}" alt="Book Cover" class="me-3" style="width: 50px; height: auto;" onerror="this.src='https://via.placeholder.com/50?text=No+Cover'">
-            <div>
-              <h6 class="mb-0">${item.title}</h6>
-              <small class="text-muted">By ${item.author}</small><br>
-              <small class="text-muted">Format: ${item.format ?? 'Unknown Format'}</small>
-            </div>
-          </div>
-        </td>
-        <td>$${itemPrice.toFixed(2)}</td>
-        <td>
-          <div class="input-group" style="width: auto; min-width: 120px;">
-            <button class="btn btn-outline-secondary px-2" onclick="updateQuantity(${index}, -1)">-</button>
-            <input type="text" class="form-control text-center" value="${item.quantity}" readonly style="width: 50px; min-width: 0; padding: 6px 8px; font-size: 1rem;">
-            <button class="btn btn-outline-secondary px-2" onclick="updateQuantity(${index}, 1)">+</button>
-          </div>
-        </td>
-        <td>$${itemTotal.toFixed(2)}</td>
-        <td>
-          <button class="btn btn-outline-danger btn-sm" onclick="removeItem(${index})">🗑️</button>
-        </td>
-      </tr>
-    `;
-    tbody.appendChild(row);
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <img src="${coverURL}" alt="Book Cover" class="me-3" style="width: 50px; height: auto;" onerror="this.src='https://via.placeholder.com/50?text=No+Cover'">
+                  <div>
+                    <h6 class="mb-0">${item.Title}</h6>
+                    <small class="text-muted">By ${item.AuthorName}</small><br>
+                    <small class="text-muted">Format: ${item.Format ?? 'Unknown Format'}</small>
+                  </div>
+                </div>
+              </td>
+              <td>$${itemPrice.toFixed(2)}</td>
+              <td>
+                <div class="input-group" style="width: auto; min-width: 120px;">
+                  <button class="btn btn-outline-secondary px-2" onclick="updateQuantity('${item.ISBN}', -1)">-</button>
+                  <input type="text" class="form-control text-center" value="${item.Quantity}" readonly style="width: 50px; min-width: 0; padding: 6px 8px; font-size: 1rem;">
+                  <button class="btn btn-outline-secondary px-2" onclick="updateQuantity('${item.ISBN}', 1)">+</button>
+                </div>
+              </td>
+              <td>$${itemTotal.toFixed(2)}</td>
+              <td>
+                <button class="btn btn-outline-danger btn-sm" onclick="removeItem('${item.ISBN}')">🗑️</button>
+              </td>
+            </tr>
+          `;
+          tbody.appendChild(row);
+        });
+
+        const tax = subtotal * 0.08;
+        const total = subtotal + tax;
+        subtotalSpan.textContent = `$${subtotal.toFixed(2)}`;
+        taxSpan.textContent = `$${tax.toFixed(2)}`;
+        totalSpan.textContent = `$${total.toFixed(2)}`;
+      } else {
+        throw new Error(data.error || 'Failed to load cart');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      document.querySelector('.container').innerHTML = `
+        <div class="alert alert-danger" role="alert">
+          Error loading cart: ${error.message}
+        </div>
+      `;
+    });
+}
+
+function updateQuantity(isbn, change) {
+  fetch('add_to_cart.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      isbn: isbn,
+      quantity: change
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      renderCart();
+    } else {
+      throw new Error(data.error || 'Failed to update quantity');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error updating quantity: ' + error.message);
   });
-
-  const tax = subtotal * 0.08;
-  const total = subtotal + tax;
-  subtotalSpan.textContent = `$${subtotal.toFixed(2)}`;
-  taxSpan.textContent = `$${tax.toFixed(2)}`;
-  totalSpan.textContent = `$${total.toFixed(2)}`;
 }
 
-function updateQuantity(index, change) {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  cart[index].quantity += change;
-  if (cart[index].quantity <= 0) {
-    cart.splice(index, 1);
-  }
-  localStorage.setItem('cart', JSON.stringify(cart));
-  renderCart();
-}
-
-function removeItem(index) {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  cart.splice(index, 1);
-  localStorage.setItem('cart', JSON.stringify(cart));
-  renderCart();
+function removeItem(isbn) {
+  fetch('add_to_cart.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      isbn: isbn,
+      quantity: -999 // This will effectively remove the item
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      renderCart();
+    } else {
+      throw new Error(data.error || 'Failed to remove item');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error removing item: ' + error.message);
+  });
 }
 
 renderCart();
