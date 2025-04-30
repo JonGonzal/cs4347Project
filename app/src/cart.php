@@ -105,54 +105,77 @@ function renderCart() {
         const subtotalSpan = document.querySelector("#subtotal");
         const taxSpan = document.querySelector("#tax");
         const totalSpan = document.querySelector("#total");
+        const checkoutButton = document.querySelector("#checkout");
 
         tbody.innerHTML = "";
         let subtotal = 0;
 
-        data.items.forEach((item, index) => {
-          const itemPrice = parseFloat(item.Price) || 0;
-          const itemTotal = itemPrice * item.Quantity;
-          subtotal += itemTotal;
-
-          const coverURL = item.ISBN
-            ? `https://covers.openlibrary.org/b/isbn/${item.ISBN}-S.jpg`
-            : 'https://via.placeholder.com/50?text=No+Cover';
-
-          const row = document.createElement("tr");
-          row.innerHTML = `
+        if (data.items.length === 0) {
+          // Cart is empty
+          tbody.innerHTML = `
             <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <img src="${coverURL}" alt="Book Cover" class="me-3" style="width: 50px; height: auto;" onerror="this.src='https://via.placeholder.com/50?text=No+Cover'">
-                  <div>
-                    <h6 class="mb-0">${item.Title}</h6>
-                    <small class="text-muted">By ${item.AuthorName}</small><br>
-                    <small class="text-muted">Format: ${item.Format ?? 'Unknown Format'}</small>
-                  </div>
-                </div>
-              </td>
-              <td>$${itemPrice.toFixed(2)}</td>
-              <td>
-                <div class="input-group" style="width: auto; min-width: 120px;">
-                  <button class="btn btn-outline-secondary px-2" onclick="updateQuantity('${item.ISBN}', -1)">-</button>
-                  <input type="text" class="form-control text-center" value="${item.Quantity}" readonly style="width: 50px; min-width: 0; padding: 6px 8px; font-size: 1rem;">
-                  <button class="btn btn-outline-secondary px-2" onclick="updateQuantity('${item.ISBN}', 1)">+</button>
-                </div>
-              </td>
-              <td>$${itemTotal.toFixed(2)}</td>
-              <td>
-                <button class="btn btn-outline-danger btn-sm" onclick="removeItem('${item.ISBN}')">🗑️</button>
+              <td colspan="5" class="text-center py-4">
+                <p class="mb-0">Your cart is empty</p>
+                <a href="index.php" class="btn btn-primary mt-2">Start Shopping</a>
               </td>
             </tr>
           `;
-          tbody.appendChild(row);
-        });
+          checkoutButton.disabled = true;
+          checkoutButton.classList.add('btn-secondary');
+          checkoutButton.classList.remove('btn-primary');
+          checkoutButton.title = 'Your cart is empty';
+        } else {
+          // Cart has items
+          checkoutButton.disabled = false;
+          checkoutButton.classList.add('btn-primary');
+          checkoutButton.classList.remove('btn-secondary');
+          checkoutButton.title = '';
 
-        const tax = subtotal * 0.08;
-        const total = subtotal + tax;
-        subtotalSpan.textContent = `$${subtotal.toFixed(2)}`;
-        taxSpan.textContent = `$${tax.toFixed(2)}`;
-        totalSpan.textContent = `$${total.toFixed(2)}`;
+          data.items.forEach((item, index) => {
+            const itemPrice = parseFloat(item.Price) || 0;
+            const itemTotal = itemPrice * item.Quantity;
+            subtotal += itemTotal;
+
+            const coverURL = item.ISBN
+              ? `https://covers.openlibrary.org/b/isbn/${item.ISBN}-S.jpg`
+              : 'https://via.placeholder.com/50?text=No+Cover';
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img src="${coverURL}" alt="Book Cover" class="me-3" style="width: 50px; height: auto;" onerror="this.src='https://via.placeholder.com/50?text=No+Cover'">
+                    <div>
+                      <h6 class="mb-0">${item.Title}</h6>
+                      <small class="text-muted">By ${item.AuthorName}</small><br>
+                      <small class="text-muted">Format: ${item.Format ?? 'Unknown Format'}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>$${itemPrice.toFixed(2)}</td>
+                <td>
+                  <div class="input-group" style="width: auto; min-width: 120px;">
+                    <button class="btn btn-outline-secondary px-2" onclick="updateQuantity('${item.ISBN}', -1)">-</button>
+                    <input type="text" class="form-control text-center" value="${item.Quantity}" readonly style="width: 50px; min-width: 0; padding: 6px 8px; font-size: 1rem;">
+                    <button class="btn btn-outline-secondary px-2" onclick="updateQuantity('${item.ISBN}', 1)">+</button>
+                  </div>
+                </td>
+                <td>$${itemTotal.toFixed(2)}</td>
+                <td>
+                  <button class="btn btn-outline-danger btn-sm" onclick="removeItem('${item.ISBN}')">🗑️</button>
+                </td>
+              </tr>
+            `;
+            tbody.appendChild(row);
+          });
+
+          const tax = subtotal * 0.08;
+          const total = subtotal + tax;
+          subtotalSpan.textContent = `$${subtotal.toFixed(2)}`;
+          taxSpan.textContent = `$${tax.toFixed(2)}`;
+          totalSpan.textContent = `$${total.toFixed(2)}`;
+        }
       } else {
         throw new Error(data.error || 'Failed to load cart');
       }
