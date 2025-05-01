@@ -15,23 +15,31 @@ $books = [];
 
 if ($search !== '') {
     $searchWildcard = "%" . $search . "%";
+    $searchExact = $search;
 
     $stmt = $conn->prepare("
         SELECT 
             b.Title, 
             b.ISBN, 
             a.AuthorName,
-            b.Format
+            b.Format,
+            g.Genre_name,
+            g.GenreID
         FROM book b
         LEFT JOIN book_authorship ba ON b.ISBN = ba.ISBN
         LEFT JOIN author a ON ba.AuthorID = a.AuthorID
-        WHERE (TRIM(b.Title) LIKE ? OR TRIM(a.AuthorName) LIKE ?)
+        
+        LEFT JOIN book_genres bg ON b.ISBN = bg.ISBN
+        LEFT JOIN genres g ON g.GenreID = bg.GenreID
+		WHERE (TRIM(b.Title) LIKE ?
+                       OR TRIM(a.AuthorName) LIKE ?
+                       OR TRIM(g.Genre_name) LIKE lower(?))
+
         ORDER BY b.Title ASC
-        LIMIT 32
     ");
 
     if ($stmt) {
-        $stmt->bind_param("ss", $searchWildcard, $searchWildcard);
+        $stmt->bind_param("sss", $searchWildcard, $searchWildcard, $searchExact);
         $stmt->execute();
         $result = $stmt->get_result();
 
